@@ -6,6 +6,7 @@ Currently, I am still in the early stages of development. We have a very simple 
 The development stack for this project is as follows:
 
 On the device we will be running a Go backend and a PHP + tailwind "frontend". Breaking this down further, the backend should handle:
+
     - Go (goroutines) async server
 
     - Serial handler task to communicate with arduino. 
@@ -14,7 +15,8 @@ On the device we will be running a Go backend and a PHP + tailwind "frontend". B
 
     - SQLite(potentially) logging
 
-- REST endpoints:
+-REST endpoints:
+
     - /start-roast
 
     - /stop-roast
@@ -28,6 +30,7 @@ On the device we will be running a Go backend and a PHP + tailwind "frontend". B
     - /more as needed
 
 The frontend should handle:
+
     - PHP + Tailwind (Ngnix + PHP-FPM)
 
     - Charting - want to avoid js where possible
