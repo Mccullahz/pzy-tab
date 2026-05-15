@@ -1,5 +1,5 @@
 // should be super simple here, running on port 8080 and just responding to /health with "ok" for now.
-// next step is to get mock data in place and then we can start building out from there.
+// mock data setup and should be good to go for basic testing.
 package main
 
 import (

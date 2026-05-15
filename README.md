@@ -1,11 +1,11 @@
 # Pzy Tab
 This project aims to create the Tablet interface for the Pzy Roaster. In creating this interface, my goal is to have a simple, intuitive web based interface that will be compatible with a variety of hardware options but targetting a touch screen "tablet" form factor. My testing device is a Lenovo Tab M11 4GB model. 
 
-Currently, I am still in the early stages of development. We have a very simple HTTP server tied in with our PHP frontend. Docker containers and compose are setup and staged for development purposes.
+Currently, I am still in the early stages of development. We have a very simple HTTP server tied in with our Typescript React frontend (Port 8000). Docker containers and compose are setup and staged for development purposes.
 
 The development stack for this project is as follows:
 
-On the device we will be running a Go backend and a PHP + tailwind "frontend". Breaking this down further, the backend should handle:
+On the device we will be running a Go backend and a React + tailwind "frontend". Breaking this down further, the backend should handle:
 
     - Go (goroutines) async server
 
@@ -21,7 +21,7 @@ On the device we will be running a Go backend and a PHP + tailwind "frontend". B
 
     - /stop-roast
 
-    - /load/unload-profile
+    - /load & /unload-profile
 
     - /status
 
@@ -31,9 +31,9 @@ On the device we will be running a Go backend and a PHP + tailwind "frontend". B
 
 The frontend should handle:
 
-    - PHP + Tailwind (Ngnix + PHP-FPM)
+    - React TS + Tailwind 
 
-    - Charting - want to avoid js where possible
+    - Charting
 
     - WebSocket client
 

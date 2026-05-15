@@ -1,3 +1,160 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* --------------------------------------------------------------------------
+   design tokens and theme mapping.
+   hierarchy: primitives → YAML palette (--rl-color-*) → semantic theme (--theme-*)
+   keeping everything separate allows for theme changes and design iterations without touching every single class in tailwind
+--------------------------------------------------------------------------- */
+
+:root {
+  /* brand primitives (design-language.md) */
+  --color-deep-obsidian: #1f1d1b;
+  --color-roasted-crema: #ece4d9;
+  --color-ash-charcoal: #3e3d3a;
+  --color-muted-rose: #ad6a6c;
+
+  /* generla palette */
+  --rl-color-surface: #151311;
+  --rl-color-surface-dim: #151311;
+  --rl-color-surface-bright: #3b3936;
+  --rl-color-surface-container-lowest: #100e0c;
+  --rl-color-surface-container-low: #1d1b19;
+  --rl-color-surface-container: #211f1d;
+  --rl-color-surface-container-high: #2c2a27;
+  --rl-color-surface-container-highest: #373432;
+  --rl-color-on-surface: #e7e1de;
+  --rl-color-on-surface-variant: #cdc5bc;
+  --rl-color-inverse-surface: #e7e1de;
+  --rl-color-inverse-on-surface: #32302e;
+  --rl-color-outline: #969087;
+  --rl-color-outline-variant: #4a463f;
+  --rl-color-surface-tint: #cdc5bb;
+  --rl-color-primary: #ffffff;
+  --rl-color-on-primary: #343029;
+  --rl-color-primary-container: #e9e1d6;
+  --rl-color-on-primary-container: #69645b;
+  --rl-color-inverse-primary: #635e55;
+  --rl-color-secondary: #ffb3b4;
+  --rl-color-on-secondary: #532023;
+  --rl-color-secondary-container: #6e3639;
+  --rl-color-on-secondary-container: #eda1a3;
+  --rl-color-tertiary: #ffffff;
+  --rl-color-on-tertiary: #313034;
+  --rl-color-tertiary-container: #e5e1e7;
+  --rl-color-on-tertiary-container: #656369;
+  --rl-color-error: #ffb4ab;
+  --rl-color-on-error: #690005;
+  --rl-color-error-container: #93000a;
+  --rl-color-on-error-container: #ffdad6;
+  --rl-color-primary-fixed: #e9e1d6;
+  --rl-color-primary-fixed-dim: #cdc5bb;
+  --rl-color-on-primary-fixed: #1e1b15;
+  --rl-color-on-primary-fixed-variant: #4b463e;
+  --rl-color-secondary-fixed: #ffdada;
+  --rl-color-secondary-fixed-dim: #ffb3b4;
+  --rl-color-on-secondary-fixed: #380c10;
+  --rl-color-on-secondary-fixed-variant: #6e3639;
+  --rl-color-tertiary-fixed: #e5e1e7;
+  --rl-color-tertiary-fixed-dim: #c9c5cb;
+  --rl-color-on-tertiary-fixed: #1c1b1f;
+  --rl-color-on-tertiary-fixed-variant: #47464b;
+  --rl-color-background: #151311;
+  --rl-color-on-background: #e7e1de;
+  --rl-color-surface-variant: #373432;
+  --rl-color-deep-obsidian-token: #1f1d1b;
+  --rl-color-roasted-crema-token: #ece4d9;
+  --rl-color-ash-charcoal-token: #3e3d3a;
+  --rl-color-muted-rose-token: #ad6a6c;
+
+  /* motion */
+  --ease-quiet: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-comfortable: 500ms;
+
+  /* typography scale (YAML) — used from tailwind arbitrary where needed */
+
+  --theme-page-bg: var(--color-roasted-crema);
+  --theme-page-fg: var(--color-deep-obsidian);
+  --theme-text-muted: color-mix(in srgb, var(--color-deep-obsidian) 72%, transparent);
+  --theme-border: color-mix(in srgb, var(--color-ash-charcoal) 55%, transparent);
+  --theme-surface-subtle: color-mix(in srgb, var(--color-deep-obsidian) 6%, transparent);
+  --theme-surface-elevated: #f4efe8;
+  --theme-accent: var(--color-muted-rose);
+  --theme-accent-foreground: #ffffff;
+  --theme-nav-bg: color-mix(in srgb, var(--color-roasted-crema) 92%, #000 8%);
+}
+
+.dark {
+  --theme-page-bg: var(--rl-color-background);
+  --theme-page-fg: var(--rl-color-on-background);
+  --theme-text-muted: var(--rl-color-on-surface-variant);
+  --theme-border: var(--rl-color-outline-variant);
+  --theme-surface-subtle: var(--rl-color-surface-container-low);
+  --theme-surface-elevated: var(--rl-color-surface-container-high);
+  --theme-accent: var(--color-muted-rose);
+  --theme-accent-foreground: var(--rl-color-roasted-crema-token);
+  --theme-nav-bg: color-mix(in srgb, var(--rl-color-surface-container) 88%, transparent);
+}
+
+html,
+body {
+  min-height: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  background-color: var(--theme-page-bg);
+  color: var(--theme-page-fg);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    'Inter',
+    sans-serif;
+  transition:
+    background-color var(--duration-comfortable) var(--ease-quiet),
+    color var(--duration-comfortable) var(--ease-quiet);
+}
+
+/* grain overlay */
+.rl-grain {
+  position: relative;
+}
+.rl-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+
