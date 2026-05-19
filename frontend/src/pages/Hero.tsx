@@ -7,12 +7,12 @@ import Options from '../components/Options';
 import Chart from '../components/Chart';
 
 export default function Hero() {
-  return (
-    <DashboardLayout
-      header={<Navbar />}
-      info={<Info />}
-      options={<Options />}
-      chart={<Chart />}
-    />
-  );
+	return (
+		<DashboardLayout
+			header={<Navbar />}
+			info={<Info />}
+			options={<Options />}
+			chart={<Chart />}
+		/>
+	);
 }
