@@ -78,7 +78,11 @@
   --theme-page-fg: var(--color-deep-obsidian);
   --theme-text-muted: color-mix(in srgb, var(--color-deep-obsidian) 72%, transparent);
   --theme-border: color-mix(in srgb, var(--color-ash-charcoal) 55%, transparent);
-  --theme-surface-subtle: color-mix(in srgb, var(--color-deep-obsidian) 6%, transparent);
+  /* surfaces must be OPAQUE: they get lifted onto the dialog backdrop, where a
+     translucent wash would let the dark backdrop bleed through and swallow the
+     text. mixing toward the page colour (rather than transparent) composites to
+     the identical tint on-page while staying readable anywhere. */
+  --theme-surface-subtle: color-mix(in srgb, var(--color-deep-obsidian) 6%, var(--color-roasted-crema));
   --theme-surface-elevated: #f4efe8;
   --theme-accent: var(--color-muted-rose);
   --theme-accent-foreground: #ffffff;

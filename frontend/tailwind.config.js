@@ -1,3 +1,17 @@
+/* Bridges a CSS-var colour into Tailwind so the `/opacity` modifier works.
+   Tailwind can only inject an alpha channel into a colour it can parse, so a
+   bare `var(--x)` silently emits NO rule for `bg-x/10` and friends. Mixing
+   toward transparent gives the same result while keeping the vars opaque and
+   themeable from index.css. */
+const themed =
+  (variable) =>
+  ({ opacityValue } = {}) => {
+    if (opacityValue === undefined) return `var(${variable})`;
+    const n = Number(opacityValue);
+    const pct = Number.isFinite(n) ? `${n * 100}%` : `calc(${opacityValue} * 100%)`;
+    return `color-mix(in srgb, var(${variable}) ${pct}, transparent)`;
+  };
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
@@ -32,21 +46,21 @@ export default {
       /* Tailwind consumes modular CSS vars — remap in one place via index.css */
       colors: {
         theme: {
-          page: 'var(--theme-page-bg)',
-          foreground: 'var(--theme-page-fg)',
-          muted: 'var(--theme-text-muted)',
-          border: 'var(--theme-border)',
-          subtle: 'var(--theme-surface-subtle)',
-          elevated: 'var(--theme-surface-elevated)',
-          accent: 'var(--theme-accent)',
-          'accent-fg': 'var(--theme-accent-foreground)',
-          nav: 'var(--theme-nav-bg)',
+          page: themed('--theme-page-bg'),
+          foreground: themed('--theme-page-fg'),
+          muted: themed('--theme-text-muted'),
+          border: themed('--theme-border'),
+          subtle: themed('--theme-surface-subtle'),
+          elevated: themed('--theme-surface-elevated'),
+          accent: themed('--theme-accent'),
+          'accent-fg': themed('--theme-accent-foreground'),
+          nav: themed('--theme-nav-bg'),
         },
         brand: {
-          obsidian: 'var(--color-deep-obsidian)',
-          crema: 'var(--color-roasted-crema)',
-          charcoal: 'var(--color-ash-charcoal)',
-          rose: 'var(--color-muted-rose)',
+          obsidian: themed('--color-deep-obsidian'),
+          crema: themed('--color-roasted-crema'),
+          charcoal: themed('--color-ash-charcoal'),
+          rose: themed('--color-muted-rose'),
         },
         rl: {
           surface: 'var(--rl-color-surface)',

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 export default function Footer() {
 	return (
 		<footer className="border-t border-theme-border bg-theme-nav/95">
-			<nav className="relative mx-auto max-w-container px-gutter py-6 xl:px-page">
+			<nav className="relative mx-auto max-w-[1600px] px-gutter py-6 xl:px-page">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center">
 						<Link
