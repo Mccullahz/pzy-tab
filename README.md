@@ -41,3 +41,7 @@ The frontend should handle:
 
 This approach provides clear separation of logic and allows for flexibility when it comes to hardware choices. The backend can run virtually anywhere and allows for a variety of options when it comes to different devices as well.
 
+## Storefront sync (optional)
+
+PZY-Tab can optionally sync orders and roast status with a storefront implementing the contract in [docs/ORDER_FULFILLMENT.md](docs/ORDER_FULFILLMENT.md). This is **off by default** — the software is fully functional standalone, and the `/sync` endpoints only exist when a deployment is explicitly configured with credentials issued by the storefront it pairs with. See [docs/SYNC.md](docs/SYNC.md) for configuration and the security model.
+
