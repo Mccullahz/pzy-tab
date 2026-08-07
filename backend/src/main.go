@@ -11,6 +11,7 @@ import (
 
 	"pzy-backend/data"
 	"pzy-backend/handlers"
+	"pzy-backend/sync"
 )
 
 // withCORS allows the frontend (served from a different port in dev/kiosk) to
@@ -52,6 +53,17 @@ func main() {
 	mux.HandleFunc("/load-profile", withCORS(handlers.LoadProfileHandler))
 	mux.HandleFunc("/override", withCORS(handlers.OverrideHandler))
 	mux.HandleFunc("/marketplace", withCORS(handlers.MarketplaceHandler))
+
+	// fulfillment sync is opt-in: without configured credentials the /sync
+	// routes are never registered and no outbound calls happen (docs/SYNC.md).
+	// deliberately not wrapped in withCORS -- service-to-service only, never
+	// called from the browser (contract §9).
+	if cfg := sync.LoadConfig(); cfg.Enabled() {
+		sync.NewService(cfg).Register(mux)
+		fmt.Println("fulfillment sync: enabled")
+	} else {
+		fmt.Println("fulfillment sync: disabled (no credentials configured)")
+	}
 
 	addr := ":8080"
 	if p := os.Getenv("PORT"); p != "" {
