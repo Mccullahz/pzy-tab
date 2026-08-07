@@ -16,6 +16,11 @@ codebases implement to this contract; neither reaches into the other's database.
 > This is a design contract, not yet an implemented pipeline. Sections marked
 > _(deferred)_ are agreed in principle but not required for the first cut.
 
+> **Open-source note:** PZY-Tab works standalone — the sync described here is
+> **optional and disabled by default**. It activates only when a deployment is
+> explicitly configured with peer credentials (see [`SYNC.md`](./SYNC.md)).
+> Nothing in this repo ships with PZY Coffee endpoints or secrets.
+
 ---
 
 ## 1. Principles
