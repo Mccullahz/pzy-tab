@@ -41,7 +41,7 @@ export default function Options({ status, onStart, onStop, onLoad }: OptionsProp
 				disabled={busy}
 				className={[
 					'relative flex min-h-[120px] items-center justify-center gap-4 rounded-design-lg border p-6 shadow-xl shadow-black/10',
-					'font-serif text-4xl font-bold uppercase tracking-wide transition-all duration-comfortable ease-quiet hover:scale-[1.01] disabled:opacity-70',
+					'font-serif text-4xl font-bold uppercase tracking-wide transition-all duration-comfortable ease-quiet active:scale-[0.98] disabled:opacity-70',
 					running
 						? 'border-theme-accent bg-theme-accent text-theme-accent-fg'
 						: 'border-theme-accent bg-theme-accent/10 text-theme-accent hover:bg-theme-accent/20',
@@ -127,7 +127,7 @@ function ActionCard({
 		<button
 			type="button"
 			onClick={onClick}
-			className="flex min-h-[110px] flex-col items-center justify-center gap-2 rounded-design-lg border border-theme-border bg-theme-elevated p-4 text-theme-foreground shadow-xl shadow-black/10 transition-all duration-comfortable ease-quiet hover:-translate-y-1 hover:border-theme-accent"
+			className="flex min-h-[110px] flex-col items-center justify-center gap-2 rounded-design-lg border border-theme-border bg-theme-elevated p-4 text-theme-foreground shadow-xl shadow-black/10 transition-all duration-comfortable ease-quiet active:scale-[0.97] active:border-theme-accent"
 		>
 			{children}
 			<span className="text-xs uppercase tracking-[0.2em] text-theme-muted">{label}</span>

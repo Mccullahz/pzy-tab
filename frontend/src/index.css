@@ -101,9 +101,12 @@
   --theme-nav-bg: color-mix(in srgb, var(--rl-color-surface-container) 88%, transparent);
 }
 
+/* app-shell sizing: the document never scrolls; the routed page scrolls inside
+   the shell's <main>. this is most of what makes it feel native on the tablet. */
 html,
-body {
-  min-height: 100%;
+body,
+#root {
+  height: 100%;
   overscroll-behavior-y: none;
 }
 
@@ -118,6 +121,25 @@ body {
   transition:
     background-color var(--duration-comfortable) var(--ease-quiet),
     color var(--duration-comfortable) var(--ease-quiet);
+  /* no blue tap flash on touch */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* touch polish: no double-tap zoom on controls, no long-press text selection */
+button,
+a {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* the app shell's scroll pane: hide the scrollbar like a native scroll view --
+   content is swiped, not dragged by a bar */
+.app-scroll {
+  scrollbar-width: none;
+}
+.app-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 /* grain overlay */
