@@ -16,11 +16,16 @@ export type Settings = {
 	theme: Theme;
 };
 
+// same-origin by default: the dev server proxies /api to the backend, so the app
+// works from any device on the LAN without being told the roaster's IP. an
+// absolute URL still works here if the backend lives somewhere else.
+const SAME_ORIGIN_API = '/api';
+
 const DEFAULTS: Settings = {
-	backendUrl: 'http://localhost:8080',
+	backendUrl: SAME_ORIGIN_API,
 	// the real marketplace service doesn't exist yet; this points at the stub
 	// catalog served by the roaster backend. repoint when the real host ships.
-	marketplaceUrl: 'http://localhost:8080',
+	marketplaceUrl: SAME_ORIGIN_API,
 	pollMs: 1000,
 	tempUnit: 'C',
 	theme: 'dark',
@@ -28,10 +33,28 @@ const DEFAULTS: Settings = {
 
 const STORAGE_KEY = 'pzy-settings';
 
+// devices set up before the proxy existed have the old localhost default
+// persisted, which points a tablet at itself. rewrite it rather than leaving
+// them stuck on an unreachable backend.
+const LEGACY_DEFAULTS = ['http://localhost:8080', 'http://127.0.0.1:8080'];
+
+function migrate(url: unknown): string | undefined {
+	if (typeof url !== 'string') return undefined;
+	return LEGACY_DEFAULTS.includes(url.replace(/\/$/, '')) ? SAME_ORIGIN_API : url;
+}
+
 function load(): Settings {
 	try {
 		const raw = localStorage.getItem(STORAGE_KEY);
-		if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+		if (raw) {
+			const stored = JSON.parse(raw) as Partial<Settings>;
+			return {
+				...DEFAULTS,
+				...stored,
+				backendUrl: migrate(stored.backendUrl) ?? DEFAULTS.backendUrl,
+				marketplaceUrl: migrate(stored.marketplaceUrl) ?? DEFAULTS.marketplaceUrl,
+			};
+		}
 	} catch {
 		/* fall through to defaults */
 	}

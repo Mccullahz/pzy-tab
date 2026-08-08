@@ -41,6 +41,19 @@ The frontend should handle:
 
 This approach provides clear separation of logic and allows for flexibility when it comes to hardware choices. The backend can run virtually anywhere and allows for a variety of options when it comes to different devices as well.
 
+## Running it
+
+```sh
+docker compose up
+```
+
+The frontend is served on port **8000** and the backend on **8080**, both bound to all
+interfaces, so any device on the same network can open the app at
+`http://<host-ip>:8000` — a tablet, a phone, another laptop. No per-device setup:
+the dev server proxies `/api` through to the backend, so whichever host served the
+page also serves the API. The Backend URL field in Settings stays available for
+pointing a device at a roaster somewhere else on the network.
+
 ## Storefront sync (optional)
 
 PZY-Tab can optionally sync orders and roast status with a storefront implementing the contract in [docs/ORDER_FULFILLMENT.md](docs/ORDER_FULFILLMENT.md). This is **off by default** — the software is fully functional standalone, and the `/sync` endpoints only exist when a deployment is explicitly configured with credentials issued by the storefront it pairs with. See [docs/SYNC.md](docs/SYNC.md) for configuration and the security model.

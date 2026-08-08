@@ -3,6 +3,8 @@ services:
     build:
       context: ./backend
     container_name: roaster-go
+    # published on all interfaces so the backend can also be hit directly from
+    # the LAN; the frontend itself reaches it over the compose network below.
     ports:
       - "8080:8080"
     volumes:
@@ -13,8 +15,13 @@ services:
     build:
       context: ./frontend
     container_name: roaster-frontend
+    environment:
+      # where the vite dev server proxies /api to, over the compose network.
+      - BACKEND_ORIGIN=http://roaster-go:8080
     ports:
-      - "8000:80"
+      # host:container -- the dev server listens on 8000 inside the container.
+      # bound to 0.0.0.0 so other devices on the LAN can reach it.
+      - "8000:8000"
     depends_on:
       - roaster-go
     restart: unless-stopped

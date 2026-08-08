@@ -7,6 +7,10 @@ RUN npm install
 
 COPY . .
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 8000
+
+# host/port live in vite.config.ts so the container and bare `npm run dev`
+# behave identically.
+CMD ["npm", "run", "dev"]
 
 

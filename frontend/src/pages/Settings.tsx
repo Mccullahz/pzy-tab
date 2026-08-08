@@ -34,11 +34,14 @@ export default function SettingsPage() {
 
 			{/* connection */}
 			<Panel title="Connection">
-				<Row label="Backend URL" hint="Where the roaster backend is reachable from this device.">
+				<Row
+					label="Backend URL"
+					hint="Where the roaster backend is reachable from this device. /api routes through whichever host served this page — leave it unless the backend lives elsewhere."
+				>
 					<UrlField
 						value={settings.backendUrl}
 						onApply={(v) => update({ backendUrl: v })}
-						placeholder="http://localhost:8080"
+						placeholder="/api"
 					/>
 				</Row>
 
@@ -99,7 +102,7 @@ export default function SettingsPage() {
 					<UrlField
 						value={settings.marketplaceUrl}
 						onApply={(v) => update({ marketplaceUrl: v })}
-						placeholder="http://localhost:8080"
+						placeholder="/api"
 					/>
 				</Row>
 			</Panel>
