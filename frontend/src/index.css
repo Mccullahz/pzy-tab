@@ -87,6 +87,18 @@
   --theme-accent: var(--color-muted-rose);
   --theme-accent-foreground: #ffffff;
   --theme-nav-bg: color-mix(in srgb, var(--color-roasted-crema) 92%, #000 8%);
+
+  /* fulfillment status colours. deliberately desaturated so a board full of
+     orders still reads as this palette rather than a traffic light; they carry
+     meaning by hue, not by shouting. grouped by who the order is waiting on:
+     waiting = ours to pick up, active = on the drum, done = roasted, away =
+     the store's now, warn = blocked, dead = terminal. */
+  --theme-status-waiting: #9a6b24;
+  --theme-status-active: var(--color-muted-rose);
+  --theme-status-done: #4f7248;
+  --theme-status-away: #4f6377;
+  --theme-status-warn: #9c4b3f;
+  --theme-status-dead: color-mix(in srgb, var(--color-deep-obsidian) 45%, transparent);
 }
 
 .dark {
@@ -99,6 +111,15 @@
   --theme-accent: var(--color-muted-rose);
   --theme-accent-foreground: var(--rl-color-roasted-crema-token);
   --theme-nav-bg: color-mix(in srgb, var(--rl-color-surface-container) 88%, transparent);
+
+  /* same roles, lifted for a dark surface: on this backdrop the light-theme
+     values would sit too close to the background to read at chip size. */
+  --theme-status-waiting: #d9a75c;
+  --theme-status-active: #ffb3b4;
+  --theme-status-done: #9dbf95;
+  --theme-status-away: #a3b8cc;
+  --theme-status-warn: #e29b8f;
+  --theme-status-dead: var(--rl-color-on-surface-variant);
 }
 
 /* app-shell sizing: the document never scrolls; the routed page scrolls inside

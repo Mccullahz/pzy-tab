@@ -9,11 +9,19 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
 type Service struct {
 	cfg Config
 	Log *Log
+
+	// mu guards activeOrder (the order this roaster has claimed, which the
+	// roast lifecycle attaches its events to -- see orders.go) and cursor (how
+	// far we've read the peer's changes feed -- see reconcile.go).
+	mu          sync.Mutex
+	activeOrder string
+	cursor      int64
 }
 
 func NewService(cfg Config) *Service {

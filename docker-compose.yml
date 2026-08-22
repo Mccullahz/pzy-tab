@@ -5,10 +5,23 @@ services:
     container_name: roaster-go
     # published on all interfaces so the backend can also be hit directly from
     # the LAN; the frontend itself reaches it over the compose network below.
+    # host 8081, not 8080: the PZY storefront's api publishes 8080 on the same
+    # machine, and two projects can't share a host port. Nothing depends on the
+    # host-side number -- the frontend proxies over the compose network.
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - ./backend:/app
+    environment:
+      # fulfillment sync (docs/SYNC.md). all three are empty unless set in .env,
+      # and with no credentials the /sync routes are never registered.
+      - SYNC_AUTH_TOKEN=${SYNC_AUTH_TOKEN:-}
+      - SYNC_SIGNING_SECRET=${SYNC_SIGNING_SECRET:-}
+      - SYNC_PEER_URL=${SYNC_PEER_URL:-}
+    # lets SYNC_PEER_URL reach a storefront running in its own compose project
+    # on this machine, without hardcoding the host's LAN IP.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
   frontend:

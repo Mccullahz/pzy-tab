@@ -102,3 +102,31 @@ export function CheckIcon({ className }: IconProps) {
 		</svg>
 	);
 }
+
+export function FilterIcon({ className }: IconProps) {
+	return (
+		<svg className={className} {...base}>
+			<path d="M4 6h16M7 12h10M10 18h4" />
+		</svg>
+	);
+}
+
+// paired arrows with the active direction implied by the caller's label; used
+// on the sort control, where a single glyph has to read as "reversible".
+export function SortAscIcon({ className }: IconProps) {
+	return (
+		<svg className={className} {...base}>
+			<path d="M7 20V4M7 4L3 8M7 4l4 4" />
+			<path d="M14 7h7M14 12h5M14 17h3" />
+		</svg>
+	);
+}
+
+export function SortDescIcon({ className }: IconProps) {
+	return (
+		<svg className={className} {...base}>
+			<path d="M7 4v16M7 20l-4-4M7 20l4-4" />
+			<path d="M14 7h3M14 12h5M14 17h7" />
+		</svg>
+	);
+}

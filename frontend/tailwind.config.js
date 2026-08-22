@@ -55,6 +55,13 @@ export default {
           accent: themed('--theme-accent'),
           'accent-fg': themed('--theme-accent-foreground'),
           nav: themed('--theme-nav-bg'),
+          /* fulfillment status roles — see index.css */
+          'status-waiting': themed('--theme-status-waiting'),
+          'status-active': themed('--theme-status-active'),
+          'status-done': themed('--theme-status-done'),
+          'status-away': themed('--theme-status-away'),
+          'status-warn': themed('--theme-status-warn'),
+          'status-dead': themed('--theme-status-dead'),
         },
         brand: {
           obsidian: themed('--color-deep-obsidian'),

@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { SettingsProvider } from './lib/settings';
 import Layout from './components/Layout';
 import Control from './pages/Control';
+import Orders from './pages/Orders';
 import Profiles from './pages/Profiles';
 import ProfileEditor from './pages/ProfileEditor';
 import Settings from './pages/Settings';
@@ -13,6 +14,7 @@ export default function App() {
 			<Routes>
 				<Route element={<Layout />}>
 					<Route path="/" element={<Control />} />
+					<Route path="/orders" element={<Orders />} />
 					<Route path="/profiles" element={<Profiles />} />
 					<Route path="/profiles/new" element={<ProfileEditor />} />
 					<Route path="/profiles/:name/edit" element={<ProfileEditor />} />

@@ -57,6 +57,65 @@ type Event struct {
 	Reason          string          `json:"reason,omitempty"`
 	TrackingNumber  string          `json:"tracking_number,omitempty"`
 	Carrier         string          `json:"carrier,omitempty"`
+
+	// Payload is the type-specific envelope some publishers nest the fields
+	// above inside. §6.2 puts them at the top level and that is what we emit,
+	// but the PZY storefront carries them here (its `payload` JSONB column
+	// reaches the wire as-is). See UnmarshalJSON.
+	Payload json.RawMessage `json:"payload,omitempty"`
+}
+
+// UnmarshalJSON reads tolerantly (§10): fields the contract puts at the top
+// level are also accepted nested under `payload`. Top level always wins; the
+// fallback only fills what a publisher left empty. Applied at every decode
+// path, so nothing downstream has to know a peer nests its extras.
+func (e *Event) UnmarshalJSON(b []byte) error {
+	type plain Event // shed the method to avoid recursing into ourselves
+	var v plain
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+	*e = Event(v)
+
+	if len(e.Payload) == 0 {
+		return nil
+	}
+	var nested struct {
+		Items          json.RawMessage `json:"items"`
+		TotalWeightG   int             `json:"total_weight_grams"`
+		PlacedAt       string          `json:"placed_at"`
+		HoldReason     string          `json:"hold_reason"`
+		Reason         string          `json:"reason"`
+		TrackingNumber string          `json:"tracking_number"`
+		Carrier        string          `json:"carrier"`
+	}
+	// a payload we can't read is not an error: the event's own fields still
+	// carry everything the ladder needs.
+	if err := json.Unmarshal(e.Payload, &nested); err != nil {
+		return nil
+	}
+	if len(e.Items) == 0 {
+		e.Items = nested.Items
+	}
+	if e.TotalWeightG == 0 {
+		e.TotalWeightG = nested.TotalWeightG
+	}
+	if e.PlacedAt == "" {
+		e.PlacedAt = nested.PlacedAt
+	}
+	if e.HoldReason == "" {
+		e.HoldReason = nested.HoldReason
+	}
+	if e.Reason == "" {
+		e.Reason = nested.Reason
+	}
+	if e.TrackingNumber == "" {
+		e.TrackingNumber = nested.TrackingNumber
+	}
+	if e.Carrier == "" {
+		e.Carrier = nested.Carrier
+	}
+	return nil
 }
 
 type StoredEvent struct {
@@ -66,10 +125,13 @@ type StoredEvent struct {
 }
 
 type OrderState struct {
-	OrderID        string          `json:"order_id"`
-	Status         string          `json:"fulfillment_status"`
-	Ordinal        int             `json:"fulfillment_ordinal"`
-	Held           bool            `json:"held"`
+	OrderID string `json:"order_id"`
+	Status  string `json:"fulfillment_status"`
+	Ordinal int    `json:"fulfillment_ordinal"`
+	Held    bool   `json:"held"`
+	// PlacedAt is when the customer ordered, carried on order.created. the roast
+	// floor sorts by it to work the oldest order first.
+	PlacedAt       string          `json:"placed_at,omitempty"`
 	HoldReason     string          `json:"hold_reason,omitempty"`
 	Terminal       string          `json:"terminal,omitempty"` // "" | canceled | refunded
 	Items          json.RawMessage `json:"items,omitempty"`
@@ -135,6 +197,7 @@ func (l *Log) applyLocked(e Event) string {
 			OrderID:      e.OrderID,
 			Status:       "new",
 			Ordinal:      0,
+			PlacedAt:     e.PlacedAt,
 			Items:        e.Items,
 			TotalWeightG: e.TotalWeightG,
 		}

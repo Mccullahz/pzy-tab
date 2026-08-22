@@ -138,6 +138,16 @@ func newRoaster() *roaster {
 
 // Tick advances the simulation by one second. Called from a background ticker.
 func Tick() {
+	// registered before the unlock below so it runs after it (defers are LIFO):
+	// the observer must never see the roaster lock held.
+	completed := false
+	profile := ""
+	defer func() {
+		if completed {
+			notify(RoastEvent{Kind: RoastCompleted, Profile: profile})
+		}
+	}()
+
 	state.mu.Lock()
 	defer state.mu.Unlock()
 
@@ -168,6 +178,10 @@ func Tick() {
 
 	if state.elapsed >= state.durationLocked() {
 		state.running = false
+		completed = true
+		if state.active != nil {
+			profile = state.active.Name
+		}
 	}
 }
 
@@ -231,7 +245,13 @@ func Start() Status {
 	state.ror = 0
 	state.ov = Overrides{}
 	state.applyCommandLocked() // commanded from step 0 immediately, not after the first tick
+	profile := ""
+	if state.active != nil {
+		profile = state.active.Name
+	}
 	state.mu.Unlock()
+
+	notify(RoastEvent{Kind: RoastStarted, Profile: profile})
 	return Snapshot()
 }
 

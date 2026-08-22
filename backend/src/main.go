@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -56,14 +57,41 @@ func main() {
 
 	// fulfillment sync is opt-in: without configured credentials the /sync
 	// routes are never registered and no outbound calls happen (docs/SYNC.md).
-	// deliberately not wrapped in withCORS -- service-to-service only, never
-	// called from the browser (contract §9).
+	syncEnabled := false
 	if cfg := sync.LoadConfig(); cfg.Enabled() {
-		sync.NewService(cfg).Register(mux)
+		syncEnabled = true
+		svc := sync.NewService(cfg)
+
+		// peer-facing ingest + changes feed. deliberately not wrapped in
+		// withCORS -- service-to-service only, never called from the browser
+		// (contract §9).
+		svc.Register(mux)
+
+		// tablet-facing order board. browser-facing, so it does get CORS.
+		svc.RegisterBrowser(mux, withCORS)
+
+		// roast-floor actions become fulfillment events. the data package
+		// doesn't know sync exists; it just announces and we translate.
+		data.OnRoastEvent(func(e data.RoastEvent) {
+			svc.HandleRoastEvent(string(e.Kind), e.Profile)
+		})
+
+		// pull the peer's feed on a timer. this is how orders reach the board:
+		// without it a roaster only ever learns what it was pushed, and the
+		// backfill the contract calls for (§6.3) has nothing to trigger it.
+		svc.StartReconcile(context.Background(), sync.DefaultReconcileInterval)
+
 		fmt.Println("fulfillment sync: enabled")
 	} else {
 		fmt.Println("fulfillment sync: disabled (no credentials configured)")
 	}
+
+	// lets the tablet know whether to show the order queue at all. always
+	// registered: a standalone install answers honestly rather than 404ing.
+	mux.HandleFunc("/capabilities", withCORS(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"sync_enabled":%t}`, syncEnabled)
+	}))
 
 	addr := ":8080"
 	if p := os.Getenv("PORT"); p != "" {

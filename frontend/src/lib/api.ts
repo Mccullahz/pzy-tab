@@ -117,6 +117,64 @@ export function clearOverride(base: string, param: OverrideParam = 'all'): Promi
 	return request<Status>(base, `/override?param=${param}`, { method: 'DELETE' });
 }
 
+// --- fulfillment orders -------------------------------------------------
+// present only when this deployment is configured for storefront sync
+// (docs/SYNC.md); a standalone roaster reports sync_enabled: false and the
+// order queue is hidden entirely.
+
+export type Capabilities = {
+	sync_enabled: boolean;
+};
+
+// a line item as snapshotted by the store at order.created (contract -7.3).
+export type OrderItem = {
+	product_id?: string;
+	name?: string;
+	roast?: number;
+	quantity?: number;
+	net_weight_grams?: number;
+	unit_cents?: number;
+	kind?: string;
+};
+
+// mirrors sync.OrderState. the roast floor deliberately sees order id, items
+// and weights but no customer PII (contract -9).
+export type Order = {
+	order_id: string;
+	fulfillment_status: string;
+	fulfillment_ordinal: number;
+	held: boolean;
+	placed_at?: string; // RFC3339, carried on order.created
+	hold_reason?: string;
+	terminal?: string;
+	items?: OrderItem[];
+	total_weight_grams?: number;
+	tracking_number?: string;
+	carrier?: string;
+};
+
+export type OrderBoard = {
+	orders: Order[];
+	active_order_id: string;
+};
+
+export function getCapabilities(base: string): Promise<Capabilities> {
+	return request<Capabilities>(base, '/capabilities');
+}
+
+export function getOrders(base: string): Promise<OrderBoard> {
+	return request<OrderBoard>(base, '/orders');
+}
+
+// claiming an order advances it to in_progress and attaches subsequent roast
+// events to it. pass "" to release without advancing anything.
+export function selectOrder(base: string, orderId: string): Promise<OrderBoard> {
+	return request<OrderBoard>(base, '/orders/select', {
+		method: 'POST',
+		body: JSON.stringify({ order_id: orderId }),
+	});
+}
+
 // browsed from a separate marketplace host (configurable in Settings), which is
 // why this takes its own base rather than reusing the roaster's.
 export function getMarketplace(base: string): Promise<MarketProfile[]> {
